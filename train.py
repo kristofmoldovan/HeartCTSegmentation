@@ -90,7 +90,7 @@ class Trainer:
         self.losses = {phase: [] for phase in self.phases}
         self.dice_scores = {phase: [] for phase in self.phases}
         self.jaccard_scores = {phase: [] for phase in self.phases}
-         
+
     def _compute_loss_and_outputs(self,
                                   images: torch.Tensor,
                                   targets: torch.Tensor):
@@ -99,7 +99,7 @@ class Trainer:
         logits = self.net(images)
         loss = self.criterion(logits, targets)
         return loss, logits
-        
+
     def _do_epoch(self, epoch: int, phase: str):
         print(f"{phase} epoch: {epoch} | time: {time.strftime('%H:%M:%S')}")
 
@@ -121,17 +121,17 @@ class Trainer:
             meter.update(logits.detach().cpu(),
                          targets.detach().cpu()
                         )
-            
+
         epoch_loss = (running_loss * self.accumulation_steps) / total_batches
         epoch_dice, epoch_iou = meter.get_metrics()
-        
+
         self.losses[phase].append(epoch_loss)
         self.dice_scores[phase].append(epoch_dice)
         self.jaccard_scores[phase].append(epoch_iou)
 
         return epoch_loss
-        
-    def train(self):
+
+    def train(self):    
         for epoch in range(self.num_epochs):
             self._do_epoch(epoch, "train")
             with torch.no_grad():
@@ -139,14 +139,14 @@ class Trainer:
                 self.scheduler.step(val_loss)
             if self.display_plot:
                 self._plot_train_history()
-                
+
             if val_loss < self.best_loss:
                 print(f"\n{'#'*20}\nSaved new checkpoint\n{'#'*20}\n")
                 self.best_loss = val_loss
                 torch.save(self.net.state_dict(), "best_model.pth")
             print()
         self._save_train_history()
-            
+
     def _plot_train_history(self):
         data = [self.losses, self.dice_scores, self.jaccard_scores]
         colors = ['deepskyblue', "crimson"]
@@ -155,18 +155,18 @@ class Trainer:
             train loss {self.losses['train'][-1]}
             val loss {self.losses['val'][-1]}
             """,
-            
+
             f"""
             train dice score {self.dice_scores['train'][-1]}
-            val dice score {self.dice_scores['val'][-1]} 
-            """, 
-                  
+            val dice score {self.dice_scores['val'][-1]}
+            """,
+
             f"""
             train jaccard score {self.jaccard_scores['train'][-1]}
             val jaccard score {self.jaccard_scores['val'][-1]}
             """,
         ]
-        
+
         clear_output(True)
         with plt.style.context("seaborn-dark-palette"):
             fig, axes = plt.subplots(3, 1, figsize=(8, 10))
@@ -175,15 +175,15 @@ class Trainer:
                 ax.plot(data[i]['train'], c=colors[-1], label="train")
                 ax.set_title(labels[i])
                 ax.legend(loc="upper right")
-                
+
             plt.tight_layout()
             plt.show()
-            
+
     def load_predtrain_model(self,
                              state_path: str):
         self.net.load_state_dict(torch.load(state_path))
         print("Predtrain model loaded")
-        
+
     def _save_train_history(self):
         """writing model weights and training logs to files."""
         torch.save(self.net.state_dict(),
@@ -193,8 +193,8 @@ class Trainer:
         log_names_ = ["_loss", "_dice", "_jaccard"]
         logs = [logs_[i][key] for i in list(range(len(logs_)))
                          for key in logs_[i]]
-        log_names = [key+log_names_[i] 
-                     for i in list(range(len(logs_))) 
+        log_names = [key+log_names_[i]
+                     for i in list(range(len(logs_)))
                      for key in logs_[i]
                     ]
         pd.DataFrame(

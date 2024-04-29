@@ -23,10 +23,11 @@ def get_one_slice_data(img_name: str,
                        root_imgs_path: str = "images/",
                        root_masks_path: str = "masks/",) -> np.ndarray:
 
-    img_path = os.path.join('images/', img_name)
-    mask_path = os.path.join('masks/', mask_name)
+    img_path = os.path.join(root_imgs_path, img_name)
+    mask_path = os.path.join(root_masks_path, mask_name)
     one_slice_img = cv2.imread(img_path)#[:,:,0] uncomment for grayscale
     one_slice_mask = cv2.imread(mask_path)
+    
     one_slice_mask[one_slice_mask < 240] = 0  # remove artifacts
     one_slice_mask[one_slice_mask >= 240] = 255
 
@@ -113,7 +114,7 @@ def get_overlaid_masks_on_image(
         plt.show()
         
         
-def get_overlaid_masks_on_full_ctscan(ct_scan_id_df: pd.DataFrame, path_to_save: str):
+def get_overlaid_masks_on_full_ctscan(ct_scan_id_df: pd.DataFrame, path_to_save: str, cimg_path: str = "images/", cmask_path: str = "masks/"):
     """
     Creating images with overlaid masks on each slice of CT scan.
     Params:
@@ -124,7 +125,7 @@ def get_overlaid_masks_on_full_ctscan(ct_scan_id_df: pd.DataFrame, path_to_save:
     for slice_ in range(num_slice):
         img_name = ct_scan_id_df.loc[slice_, "ImageId"]
         mask_name = ct_scan_id_df.loc[slice_, "MaskId"]
-        one_slice_img, one_slice_mask = get_one_slice_data(img_name, mask_name)
+        one_slice_img, one_slice_mask = get_one_slice_data(img_name, mask_name, cimg_path, cmask_path)
         get_overlaid_masks_on_image(one_slice_img,
                                 one_slice_mask,
                                 write=True, 

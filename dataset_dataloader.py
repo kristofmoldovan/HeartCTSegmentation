@@ -10,7 +10,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
 
-from albumentations.pytorch import ToTensor, ToTensorV2 
+from albumentations.pytorch import ToTensor, ToTensorV2
 from albumentations import (HorizontalFlip,
                             VerticalFlip,
                             Normalize,
@@ -18,7 +18,7 @@ from albumentations import (HorizontalFlip,
 
 
 class LungsDataset(Dataset):
-    def __init__(self, 
+    def __init__(self,
                  imgs_dir: str,
                  masks_dir:str,
                  df: pd.DataFrame,
@@ -28,7 +28,7 @@ class LungsDataset(Dataset):
         self.root_masks_dir = masks_dir
         self.df = df
         self.augmentations = get_augmentations(phase)
-    
+
     def __len__(self):
         return len(self.df)
 
@@ -39,10 +39,17 @@ class LungsDataset(Dataset):
         mask_path = os.path.join(self.root_masks_dir, mask_name)
         img = cv2.imread(img_path)
         mask = cv2.imread(mask_path)
+
+        print(mask_path)
+        print("mask type: ", str(type(mask)))
+
+        #with open('file.txt', 'a') as f:
+        #    f.write("PATH: " + mask_path + " TYPE " + str(type(mask)) + "\n")
+
         mask[mask < 240] = 0    # remove artifacts
         mask[mask > 0] = 1
 
-        augmented = self.augmentations(image=img, 
+        augmented = self.augmentations(image=img,
                                        mask=mask.astype(np.float32))
         img = augmented['image']
         mask = augmented['mask'].permute(2, 0, 1)
@@ -57,7 +64,7 @@ def get_augmentations(phase,
     if phase == "train":
         list_transforms.extend(
             [
-                VerticalFlip(p=0.5), 
+                VerticalFlip(p=0.5),
             ]
         )
     list_transforms.extend(
@@ -82,10 +89,10 @@ def get_dataloader(
 ):
     '''Returns: dataloader for the model training'''
     df = pd.read_csv(path_to_csv)
-    
 
-    train_df, val_df = train_test_split(df, 
-                                          test_size=test_size, 
+
+    train_df, val_df = train_test_split(df,
+                                          test_size=test_size,
                                           random_state=69)
     train_df, val_df = train_df.reset_index(drop=True), val_df.reset_index(drop=True)
 
@@ -96,7 +103,7 @@ def get_dataloader(
         batch_size=batch_size,
         num_workers=num_workers,
         pin_memory=True,
-        shuffle=True,   
+        shuffle=True,
     )
 
     return dataloader

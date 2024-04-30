@@ -19,7 +19,7 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 from dataset_dataloader import LungsDataset, get_augmentations, get_dataloader
 from loss_metric import Meter, BCEDiceLoss
 
-from segmentation_models_pytorch.unet import Unet
+from segmentation_models_pytorch import Unet
 import matplotlib.pyplot as plt
 from IPython.display import clear_output
 

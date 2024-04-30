@@ -40,8 +40,8 @@ class LungsDataset(Dataset):
         img = cv2.imread(img_path)
         mask = cv2.imread(mask_path)
 
-        print(mask_path)
-        print("mask type: ", str(type(mask)))
+        #print(mask_path)
+        #print("mask type: ", str(type(mask)))
 
         #with open('file.txt', 'a') as f:
         #    f.write("PATH: " + mask_path + " TYPE " + str(type(mask)) + "\n")

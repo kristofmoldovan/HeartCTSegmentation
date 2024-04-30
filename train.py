@@ -143,7 +143,7 @@ class Trainer:
             if val_loss < self.best_loss:
                 print(f"\n{'#'*20}\nSaved new checkpoint\n{'#'*20}\n")
                 self.best_loss = val_loss
-                torch.save(self.net.state_dict(), "best_model.pth")
+                torch.save(self.net.state_dict(), "best_model_ "+ str(epoch) +".pth")
             print()
         self._save_train_history()
 

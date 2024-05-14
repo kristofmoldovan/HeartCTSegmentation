@@ -40,7 +40,7 @@ class LungsDataset(Dataset):
         img = cv2.imread(img_path)
         mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
 
-        mask = np.extend_dims(mask, axis=2)
+        mask = np.expand_dims(mask, axis=2)
 
         #print(mask_path)
         #print("mask type: ", str(type(mask)))

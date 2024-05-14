@@ -89,7 +89,8 @@ def get_overlaid_masks_on_image(
     """overlap masks on image and save this as a new image."""
 
     path_to_save_ = os.path.join(path_to_save, name_to_save)
-    lung, heart, trachea = [one_slice_mask[:, :, i] for i in range(3)]
+    #lung, heart, trachea = [one_slice_mask[:, :, i] for i in range(3)]
+    heart = one_slice_mask[:, :, 0]
     figsize = (w / dpi), (h / dpi)
     fig = plt.figure(figsize=(figsize))
     fig.add_axes([0, 0, 1, 1])
@@ -98,12 +99,12 @@ def get_overlaid_masks_on_image(
     plt.imshow(one_slice_image, cmap="bone")
 
     # overlaying segmentation masks
-    plt.imshow(np.ma.masked_where(lung == False, lung),
-            cmap='cool', alpha=0.3)
+    #plt.imshow(np.ma.masked_where(lung == False, lung),
+    #        cmap='cool', alpha=0.3)
     plt.imshow(np.ma.masked_where(heart == False, heart),
             cmap='autumn', alpha=0.3)
-    plt.imshow(np.ma.masked_where(trachea == False, trachea),
-               cmap='autumn_r', alpha=0.3) 
+    #plt.imshow(np.ma.masked_where(trachea == False, trachea),
+    #           cmap='autumn_r', alpha=0.3) 
 
     plt.axis('off')
     fig.savefig(f"{path_to_save_}.png",bbox_inches='tight', 
@@ -181,8 +182,8 @@ def compute_scores_per_classes(model,
             logits = logits.detach().cpu().numpy()
             targets = targets.detach().cpu().numpy()
             
-            dice_scores = dice_coef_metric_per_classes(logits, targets)
-            iou_scores = jaccard_coef_metric_per_classes(logits, targets)
+            dice_scores = dice_coef_metric_per_classes(logits, targets, classes=classes)
+            iou_scores = jaccard_coef_metric_per_classes(logits, targets, classes=classes)
 
             for key in dice_scores.keys():
                 dice_scores_per_classes[key].extend(dice_scores[key])

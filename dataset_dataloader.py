@@ -38,7 +38,9 @@ class LungsDataset(Dataset):
         img_path = os.path.join(self.root_imgs_dir, img_name)
         mask_path = os.path.join(self.root_masks_dir, mask_name)
         img = cv2.imread(img_path)
-        mask = cv2.imread(mask_path)
+        mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
+
+        mask = np.extend_dims(mask, axis=2)
 
         #print(mask_path)
         #print("mask type: ", str(type(mask)))
@@ -90,6 +92,8 @@ def get_dataloader(
     '''Returns: dataloader for the model training'''
     df = pd.read_csv(path_to_csv)
 
+
+    #TODO: RANDOM???
 
     train_df, val_df = train_test_split(df,
                                           test_size=test_size,

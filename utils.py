@@ -8,6 +8,8 @@ import cv2
 
 import matplotlib.pyplot as plt
 
+import pickle
+
 import torch
 import torch.nn as nn
 from albumentations import Normalize
@@ -176,11 +178,20 @@ def compute_scores_per_classes(model,
     iou_scores_per_classes = {key: list() for key in classes}
 
     with torch.no_grad():
-        for i, (imgs, targets) in enumerate(dataloader):
+        for i, (imgs, targets, name) in enumerate(dataloader):
+            #print(imgs.shape)
+            
             imgs, targets = imgs.to(device), targets.to(device)
             logits = model(imgs)
             logits = logits.detach().cpu().numpy()
             targets = targets.detach().cpu().numpy()
+
+            #LOGITS: PREDICTION
+            #TARGETS: TRUTH MASK
+
+            for i in range(batch_sizee):
+              with open(os.path.join("predictions", names[i].split('.jpg')[0]+ '_pred' + '.npy'), 'wb') as f:
+                pickle.dump(logits[i], f)
             
             dice_scores = dice_coef_metric_per_classes(logits, targets, classes=classes)
             iou_scores = jaccard_coef_metric_per_classes(logits, targets, classes=classes)

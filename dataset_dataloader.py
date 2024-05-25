@@ -56,7 +56,7 @@ class LungsDataset(Dataset):
         img = augmented['image']
         mask = augmented['mask'].permute(2, 0, 1)
 
-        return img, mask
+        return img, mask, img_name
 
 
 def get_augmentations(phase,
@@ -93,7 +93,7 @@ def get_dataloader(
     df = pd.read_csv(path_to_csv)
 
 
-    #TODO: RANDOM???
+   
 
     train_df, val_df = train_test_split(df,
                                           test_size=test_size,
@@ -101,6 +101,10 @@ def get_dataloader(
     train_df, val_df = train_df.reset_index(drop=True), val_df.reset_index(drop=True)
 
     df = train_df if phase == "train" else val_df
+
+    #determinisztikusan random
+    #df.to_csv("val1.csv")
+
     image_dataset = LungsDataset(imgs_dir, masks_dir, df, phase)
     dataloader = DataLoader(
         image_dataset,

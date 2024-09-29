@@ -16,13 +16,17 @@ from albumentations import (HorizontalFlip,
                             Normalize,
                             Compose)
 
+import nibabel as nib
+
 
 class LungsDataset(Dataset):
     def __init__(self,
                  imgs_dir: str,
                  masks_dir:str,
                  df: pd.DataFrame,
-                 phase: str):
+                 phase: str,
+                 do_augmentation: bool = False,
+                 slices: bool = False):
         """Initialization."""
         self.root_imgs_dir = imgs_dir
         self.root_masks_dir = masks_dir
@@ -37,10 +41,18 @@ class LungsDataset(Dataset):
         mask_name = self.df.loc[idx, "MaskId"]
         img_path = os.path.join(self.root_imgs_dir, img_name)
         mask_path = os.path.join(self.root_masks_dir, mask_name)
-        img = cv2.imread(img_path)
-        mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
+        
+        
+        if (slices):
+            img = cv2.imread(img_path)
+            mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
 
-        mask = np.expand_dims(mask, axis=2)
+            mask = np.expand_dims(mask, axis=2)
+        else:
+            img = nib.load(os.path.join(self.root_imgs_dir, id + '.nii.gz'))
+            mask = nib.load(os.path.join(self.root_masks_dir, id + 'nii.gz'))
+            img = img.get_fdata()
+            mask = mask.get_fdata()
 
         #print(mask_path)
         #print("mask type: ", str(type(mask)))
@@ -51,10 +63,11 @@ class LungsDataset(Dataset):
         mask[mask < 240] = 0    # remove artifacts
         mask[mask > 0] = 1
 
-        augmented = self.augmentations(image=img,
-                                       mask=mask.astype(np.float32))
-        img = augmented['image']
-        mask = augmented['mask'].permute(2, 0, 1)
+        if do_augmentation:
+            augmented = self.augmentations(image=img,
+                                        mask=mask.astype(np.float32))
+            img = augmented['image']
+            mask = augmented['mask'].permute(2, 0, 1)
 
         return img, mask, img_name
 

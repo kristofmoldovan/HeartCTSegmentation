@@ -67,8 +67,8 @@ class LungsDataset(Dataset):
 
         target_shape = (512, 512, 512)
 
-        img = self.resizeArray(img, target_shape)
-        mask = self.resizeArray(mask, target_shape)
+        img = self.expand_3d_array(img, target_shape)
+        mask = self.expand_3d_array(mask, target_shape)
 
         if self.do_augmentation:
             augmented = self.augmentations(image=img,
@@ -78,32 +78,43 @@ class LungsDataset(Dataset):
 
         return img, mask, img_name
 
-    def resizeArray(self, arr, target):
-        # Get current shape
-        h, w = arr.shape[:2]
+    def expand_3d_array(self, arr, target_shape):
+        # Get the current shape (height, width, depth)
+        h, w, d = arr.shape
 
-        # Get target dimensions
-        target_h, target_w = target_shape
+        # Get the target shape
+        target_h, target_w, target_d = target_shape
 
         # Calculate the scaling factor to maintain aspect ratio
-        scale = min(target_w / w, target_h / h)
+        scale_h = target_h / h
+        scale_w = target_w / w
+        scale_d = target_d / d
 
-        # Compute new dimensions
-        new_w = int(w * scale)
+        # Use the minimum scale factor to preserve aspect ratio
+        scale = min(scale_h, scale_w, scale_d)
+
+        # Compute the new dimensions for height, width, and depth
         new_h = int(h * scale)
+        new_w = int(w * scale)
+        new_d = int(d * scale)
 
-        # Resize array using interpolation (you can use other methods if needed)
-        resized_arr = cv2.resize(arr, (new_w, new_h), interpolation=cv2.INTER_AREA)
+        # Resize the array using np.kron (simple upsampling by replication)
+        # This uses Kronecker product to scale up all 3 dimensions proportionally
+        resized_arr = np.kron(arr, np.ones((new_h // h, new_w // w, new_d // d)))
 
-        # Create a new array of zeros with the target size
-        expanded_arr = np.zeros((target_h, target_w) + arr.shape[2:], dtype=arr.dtype)
+        # Truncate the resized array to the new shape in case of rounding issues
+        resized_arr = resized_arr[:new_h, :new_w, :new_d]
 
-        # Calculate the position to center the resized array
+        # Create a new array filled with zeros of the target size
+        expanded_arr = np.zeros(target_shape, dtype=arr.dtype)
+
+        # Calculate offsets to center the resized array
         y_offset = (target_h - new_h) // 2
         x_offset = (target_w - new_w) // 2
+        d_offset = (target_d - new_d) // 2
 
-        # Place the resized array in the center
-        expanded_arr[y_offset:y_offset+new_h, x_offset:x_offset+new_w] = resized_arr
+        # Place the resized array in the center of the target array
+        expanded_arr[y_offset:y_offset+new_h, x_offset:x_offset+new_w, d_offset:d_offset+new_d] = resized_arr
 
         return expanded_arr
     

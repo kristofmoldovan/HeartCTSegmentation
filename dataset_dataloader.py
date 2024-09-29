@@ -49,10 +49,10 @@ class LungsDataset(Dataset):
             img = cv2.imread(img_path)
             mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
             mask = np.expand_dims(mask, axis=2)
-            
+
         else:
-            img = nib.load(os.path.join(self.root_imgs_dir, id + '.nii.gz'))
-            mask = nib.load(os.path.join(self.root_masks_dir, id + 'nii.gz'))
+            img = nib.load(os.path.join(self.root_imgs_dir, img_name + '.nii.gz'))
+            mask = nib.load(os.path.join(self.root_masks_dir, mask_name + 'nii.gz'))
             img = img.get_fdata()
             mask = mask.get_fdata()
 

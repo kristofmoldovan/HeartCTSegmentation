@@ -65,8 +65,10 @@ class LungsDataset(Dataset):
         mask[mask < 240] = 0    # remove artifacts
         mask[mask > 0] = 1
 
-        print(img.shape)
-        print(mask.shape)
+        target_shape = (512, 512, 512)
+
+        img = self.resizeArray(img, target_shape)
+        mask = self.resizeArray(mask, target_shape)
 
         if self.do_augmentation:
             augmented = self.augmentations(image=img,

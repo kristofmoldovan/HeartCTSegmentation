@@ -65,6 +65,9 @@ class LungsDataset(Dataset):
         mask[mask < 240] = 0    # remove artifacts
         mask[mask > 0] = 1
 
+        print(img.shape)
+        print(mask.shape)
+
         if self.do_augmentation:
             augmented = self.augmentations(image=img,
                                         mask=mask.astype(np.float32))
@@ -72,6 +75,36 @@ class LungsDataset(Dataset):
             mask = augmented['mask'].permute(2, 0, 1)
 
         return img, mask, img_name
+
+    def resizeArray(self, arr, target):
+        # Get current shape
+        h, w = arr.shape[:2]
+
+        # Get target dimensions
+        target_h, target_w = target_shape
+
+        # Calculate the scaling factor to maintain aspect ratio
+        scale = min(target_w / w, target_h / h)
+
+        # Compute new dimensions
+        new_w = int(w * scale)
+        new_h = int(h * scale)
+
+        # Resize array using interpolation (you can use other methods if needed)
+        resized_arr = cv2.resize(arr, (new_w, new_h), interpolation=cv2.INTER_AREA)
+
+        # Create a new array of zeros with the target size
+        expanded_arr = np.zeros((target_h, target_w) + arr.shape[2:], dtype=arr.dtype)
+
+        # Calculate the position to center the resized array
+        y_offset = (target_h - new_h) // 2
+        x_offset = (target_w - new_w) // 2
+
+        # Place the resized array in the center
+        expanded_arr[y_offset:y_offset+new_h, x_offset:x_offset+new_w] = resized_arr
+
+        return expanded_arr
+    
 
 
 def get_augmentations(phase,

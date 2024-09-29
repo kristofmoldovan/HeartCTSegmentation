@@ -32,6 +32,8 @@ class LungsDataset(Dataset):
         self.root_masks_dir = masks_dir
         self.df = df
         self.augmentations = get_augmentations(phase)
+        self.do_augmentation = do_augmentation
+        self.slices = slices
 
     def __len__(self):
         return len(self.df)
@@ -43,11 +45,11 @@ class LungsDataset(Dataset):
         mask_path = os.path.join(self.root_masks_dir, mask_name)
         
         
-        if (slices):
+        if (self.slices):
             img = cv2.imread(img_path)
             mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
-
             mask = np.expand_dims(mask, axis=2)
+            
         else:
             img = nib.load(os.path.join(self.root_imgs_dir, id + '.nii.gz'))
             mask = nib.load(os.path.join(self.root_masks_dir, id + 'nii.gz'))
@@ -63,7 +65,7 @@ class LungsDataset(Dataset):
         mask[mask < 240] = 0    # remove artifacts
         mask[mask > 0] = 1
 
-        if do_augmentation:
+        if self.do_augmentation:
             augmented = self.augmentations(image=img,
                                         mask=mask.astype(np.float32))
             img = augmented['image']

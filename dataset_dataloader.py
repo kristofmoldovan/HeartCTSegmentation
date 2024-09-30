@@ -94,12 +94,6 @@ class LungsDataset(Dataset):
 
         print(scale_factor)
 
-        pad_x = int((tx - x*scale_factor) // 2)
-        pad_y = int((ty - y*scale_factor) // 2)
-        pad_z = int((tz - z*scale_factor) // 2)
-
-        print(pad_x, pad_y, pad_z)
-
         if (is_mask):
             order = 0
         else:
@@ -107,6 +101,15 @@ class LungsDataset(Dataset):
 
         # Linear interpolation (order=1)
         scaled_arr = scipy.ndimage.zoom(arr, scale_factor, order=order)
+
+        print(scaled_arr.shape)
+
+        pad_x = int((tx - x*scale_factor) // 2)
+        pad_y = int((ty - y*scale_factor) // 2)
+        pad_z = int((tz - z*scale_factor) // 2)
+
+        print(pad_x, pad_y, pad_z)
+
         padded_arr = np.pad(scaled_arr, ((pad_x, pad_x), (pad_y, pad_y), (pad_z, pad_z)), mode='constant', constant_values=0)
 
         return padded_arr

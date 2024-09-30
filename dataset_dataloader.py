@@ -67,7 +67,7 @@ class LungsDataset(Dataset):
         mask[mask < 240] = 0    # remove artifacts
         mask[mask > 0] = 1
 
-        target_shape = (512, 512, 512)
+        target_shape = (260, 260, 440)
 
         img = self.expand_3d_array(img, target_shape)
         mask = self.expand_3d_array(mask, target_shape, True)
@@ -90,9 +90,9 @@ class LungsDataset(Dataset):
         # Scale factors
         scale_factor = min(tx/x, ty/y, tz/z)
 
-        pad_x = ((tx - x) // 2)
-        pad_y = ((ty - y) // 2)
-        pad_z = ((tz - z) // 2)
+        pad_x = ((tx - x*scale_factor) // 2)
+        pad_y = ((ty - y*scale_factor) // 2)
+        pad_z = ((tz - z*scale_factor) // 2)
 
         if (is_mask):
             order = 0

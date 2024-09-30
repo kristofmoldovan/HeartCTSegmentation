@@ -67,7 +67,7 @@ class LungsDataset(Dataset):
         mask[mask < 240] = 0    # remove artifacts
         mask[mask > 0] = 1
 
-        target_shape = (311, 311, 440)
+        target_shape = (256, 256, 256)
 
         
 

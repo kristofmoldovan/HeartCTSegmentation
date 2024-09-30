@@ -4,6 +4,8 @@ import numpy as np
 import pandas as pd
 import cv2
 
+import scipy.ndimage
+
 from sklearn.model_selection import train_test_split
 
 import torch
@@ -68,7 +70,7 @@ class LungsDataset(Dataset):
         target_shape = (512, 512, 512)
 
         img = self.expand_3d_array(img, target_shape)
-        mask = self.expand_3d_array(mask, target_shape)
+        mask = self.expand_3d_array(mask, target_shape, True)
 
         if self.do_augmentation:
             augmented = self.augmentations(image=img,
@@ -78,45 +80,27 @@ class LungsDataset(Dataset):
 
         return img, mask, img_name
 
-    def expand_3d_array(self, arr, target_shape):
-        # Get the current shape (height, width, depth)
-        h, w, d = arr.shape
+    def expand_3d_array(self, arr, target_shape, is_mask: bool = False):
+        x, y, z = arr.shape
+        tx, ty, tz = target_shape
 
-        # Get the target shape
-        target_h, target_w, target_d = target_shape
+        # Scale factors
+        scale_factor = min(tx/x, ty/y, tz/z)
 
-        # Calculate the scaling factor to maintain aspect ratio
-        scale_h = target_h / h
-        scale_w = target_w / w
-        scale_d = target_d / d
+        pad_x = ((tx - x) // 2)
+        pad_y = ((ty - y) // 2)
+        pad_z = ((tz - z) // 2)
 
-        # Use the minimum scale factor to preserve aspect ratio
-        scale = min(scale_h, scale_w, scale_d)
+        if (is_mask):
+            order = 0
+        else:
+            order = 1
 
-        # Compute the new dimensions for height, width, and depth
-        new_h = int(h * scale)
-        new_w = int(w * scale)
-        new_d = int(d * scale)
+        # Linear interpolation (order=1)
+        scaled_arr = scipy.ndimage.zoom(arr, scale_factor, order=order)
+        padded_arr = np.pad(scaled_arr, (pad_x, pad_y, pad_z), mode='constant', constant_values=0)
 
-        # Resize the array using np.kron (simple upsampling by replication)
-        # This uses Kronecker product to scale up all 3 dimensions proportionally
-        resized_arr = np.kron(arr, np.ones((new_h // h, new_w // w, new_d // d)))
-
-        # Truncate the resized array to the new shape in case of rounding issues
-        resized_arr = resized_arr[:new_h, :new_w, :new_d]
-
-        # Create a new array filled with zeros of the target size
-        expanded_arr = np.zeros(target_shape, dtype=arr.dtype)
-
-        # Calculate offsets to center the resized array
-        y_offset = (target_h - new_h) // 2
-        x_offset = (target_w - new_w) // 2
-        d_offset = (target_d - new_d) // 2
-
-        # Place the resized array in the center of the target array
-        expanded_arr[y_offset:y_offset+new_h, x_offset:x_offset+new_w, d_offset:d_offset+new_d] = resized_arr
-
-        return expanded_arr
+        return padded_arr
     
 
 

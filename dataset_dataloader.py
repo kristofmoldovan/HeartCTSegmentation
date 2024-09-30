@@ -72,6 +72,9 @@ class LungsDataset(Dataset):
         img = self.expand_3d_array(img, target_shape)
         mask = self.expand_3d_array(mask, target_shape, True)
 
+        print(img.shape)
+        print(mask.shape)
+
         if self.do_augmentation:
             augmented = self.augmentations(image=img,
                                         mask=mask.astype(np.float32))

@@ -58,7 +58,8 @@ class Trainer:
                  imgs_dir: str,
                  masks_dir: str,
                  path_to_csv: str,
-                 display_plot: bool = True
+                 display_plot: bool = True,
+                 num_workers: int = 2
                 ):
 
         """Initialization."""
@@ -82,7 +83,7 @@ class Trainer:
                 path_to_csv = path_to_csv,
                 phase = phase,
                 batch_size = 8,
-                num_workers = 6
+                num_workers = num_workers
             )
             for phase in self.phases
         }

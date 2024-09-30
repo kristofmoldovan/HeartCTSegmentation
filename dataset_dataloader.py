@@ -69,8 +69,13 @@ class LungsDataset(Dataset):
 
         target_shape = (311, 311, 440)
 
+        
+
         img = self.expand_3d_array(img, target_shape)
         mask = self.expand_3d_array(mask, target_shape, True)
+
+        print("IMG SHAPE: ", img.shape)
+        print("mask shape: ", mask.shape)
 
         print(img.shape)
         print(mask.shape)

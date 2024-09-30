@@ -134,7 +134,7 @@ def get_dataloader(
     path_to_csv: str,
     phase: str,
     batch_size: int = 8,
-    num_workers: int = 6,
+    num_workers: int = 2,
     test_size: float = 0.2,
 ):
     '''Returns: dataloader for the model training'''

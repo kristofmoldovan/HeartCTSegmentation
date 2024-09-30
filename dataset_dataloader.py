@@ -94,9 +94,9 @@ class LungsDataset(Dataset):
 
         print(scale_factor)
 
-        pad_x = ((tx - x*scale_factor) // 2)
-        pad_y = ((ty - y*scale_factor) // 2)
-        pad_z = ((tz - z*scale_factor) // 2)
+        pad_x = int((tx - x*scale_factor) // 2)
+        pad_y = int((ty - y*scale_factor) // 2)
+        pad_z = int((tz - z*scale_factor) // 2)
 
         print(pad_x, pad_y, pad_z)
 

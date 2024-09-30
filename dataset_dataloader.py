@@ -190,3 +190,31 @@ def get_dataloader(
     )
 
     return dataloader
+
+def get_dataset(
+    imgs_dir: str,
+    masks_dir: str,
+    path_to_csv: str,
+    phase: str,
+    batch_size: int = 8,
+    num_workers: int = 2,
+    test_size: float = 0.2,
+):
+    '''Returns: dataloader for the model training'''
+    df = pd.read_csv(path_to_csv)
+
+
+   
+
+    train_df, val_df = train_test_split(df,
+                                          test_size=test_size,
+                                          random_state=69)
+    train_df, val_df = train_df.reset_index(drop=True), val_df.reset_index(drop=True)
+
+    df = train_df if phase == "train" else val_df
+
+    #determinisztikusan random
+    #df.to_csv("val1.csv")
+
+    image_dataset = LungsDataset(imgs_dir, masks_dir, df, phase)
+    return image_dataset

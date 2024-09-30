@@ -189,9 +189,9 @@ def compute_scores_per_classes(model,
             #LOGITS: PREDICTION
             #TARGETS: TRUTH MASK
 
-            for i in range(batch_sizee):
-              with open(os.path.join("predictions", names[i].split('.jpg')[0]+ '_pred' + '.npy'), 'wb') as f:
-                pickle.dump(logits[i], f)
+            #for i in range(batch_sizee):
+            #  with open(os.path.join("predictions", names[i].split('.jpg')[0]+ '_pred' + '.npy'), 'wb') as f:
+            #    pickle.dump(logits[i], f)
             
             dice_scores = dice_coef_metric_per_classes(logits, targets, classes=classes)
             iou_scores = jaccard_coef_metric_per_classes(logits, targets, classes=classes)

@@ -87,6 +87,8 @@ class LungsDataset(Dataset):
         x, y, z = arr.shape
         tx, ty, tz = target_shape
 
+        print(x, y, z)
+
         # Scale factors
         scale_factor = min(tx/x, ty/y, tz/z)
 

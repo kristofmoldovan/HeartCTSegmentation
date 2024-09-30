@@ -81,7 +81,7 @@ class LungsDataset(Dataset):
             img = augmented['image']
             mask = augmented['mask'].permute(2, 0, 1)
 
-        return img, mask, img_name
+        return img, mask#, img_name
 
     def expand_3d_array(self, arr, target_shape, is_mask: bool = False):
         x, y, z = arr.shape

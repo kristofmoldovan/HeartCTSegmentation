@@ -64,8 +64,8 @@ class LungsDataset(Dataset):
         #with open('file.txt', 'a') as f:
         #    f.write("PATH: " + mask_path + " TYPE " + str(type(mask)) + "\n")
 
-        mask[mask < 240] = 0    # remove artifacts
-        mask[mask > 0] = 1
+        #mask[mask < 240] = 0    # remove artifacts
+        #mask[mask > 0] = 1
 
         target_shape = (128, 128, 128)
 
@@ -79,6 +79,8 @@ class LungsDataset(Dataset):
 
         img = img.astype(np.float32)
         mask = mask.astype(np.float32)
+
+        #np.unique("Mask unique: ", mask)
 
         print("IMG SHAPE: ", img.shape)
         print("mask shape: ", mask.shape)

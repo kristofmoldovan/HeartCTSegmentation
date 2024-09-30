@@ -104,13 +104,20 @@ class LungsDataset(Dataset):
 
         print(scaled_arr.shape)
 
-        pad_x = int((tx - x*scale_factor) // 2)
-        pad_y = int((ty - y*scale_factor) // 2)
-        pad_z = int((tz - z*scale_factor) // 2)
+        sx, sy, sz = scaled_arr.shape
 
-        print(pad_x, pad_y, pad_z)
+        pad_x = int((tx - sx) // 2)
+        pad_y = int((ty - sy) // 2)
+        pad_z = int((tz - sz) // 2)
 
-        padded_arr = np.pad(scaled_arr, ((pad_x, pad_x), (pad_y, pad_y), (pad_z, pad_z)), mode='constant', constant_values=0)
+        pad_x2 = tx - sx - pad_x
+        pad_y2 = ty - sy - pad_y
+        pad_z2 = tz - sz - pad_z
+
+
+        padded_arr = np.pad(scaled_arr, ((pad_x, pad_x2), (pad_y, pad_y2), (pad_z, pad_z2)), mode='constant', constant_values=0)
+
+        print(padded_arr.shape)
 
         return padded_arr
     

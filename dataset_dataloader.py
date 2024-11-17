@@ -80,8 +80,8 @@ class LungsDataset(Dataset):
         img = np.expand_dims(img, axis=0)
         mask = np.expand_dims(mask, axis=0)
 
-        img = img.astype(np.float32)
-        mask = mask.astype(np.float32)
+        img = img.astype(np.float16)
+        mask = mask.astype(np.float16)
 
         #np.unique("Mask unique: ", mask)
 

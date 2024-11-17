@@ -34,7 +34,7 @@ class LungsDataset(Dataset):
         self.root_masks_dir = masks_dir
         self.df = df
         self.augmentations = get_augmentations(phase)
-        self.do_augmentation = do_augmentation
+        self.do_augmentation = False #do_augmentation
         self.slices = slices
 
     def __len__(self):
@@ -148,7 +148,7 @@ def get_augmentations(phase,
         )
     list_transforms.extend(
         [
-            Normalize(mean=mean, std=std, p=1),
+            #Normalize(mean=mean, std=std, p=1),
             #ToTensor(num_classes=3, sigmoid=False),
             ToTensorV2(),
         ]

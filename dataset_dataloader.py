@@ -77,7 +77,10 @@ class LungsDataset(Dataset):
         
         np.clip(img, -500, 500, img)
 
-        
+        print("IMG ORIG SHAPE: ", img.shape)
+        print("mask orig shape: ", mask.shape)
+
+
         img = self.pad_array(img, target_shape)
         mask = self.pad_array(mask, target_shape)
 

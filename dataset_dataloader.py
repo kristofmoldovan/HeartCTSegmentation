@@ -104,6 +104,8 @@ class LungsDataset(Dataset):
             img = augmented['image']
             mask = augmented['mask'].permute(2, 0, 1)
 
+        torch.cuda.empty_cache()
+
         return img, mask#, img_name
 
 

@@ -67,12 +67,12 @@ class LungsDataset(Dataset):
         #mask[mask < 240] = 0    # remove artifacts
         #mask[mask > 0] = 1
 
-        target_shape = (128, 128, 128)
+        #target_shape = (128, 128, 128)
 
         
 
-        img = self.expand_3d_array(img, target_shape)
-        mask = self.expand_3d_array(mask, target_shape, True)
+        #img = self.expand_3d_array(img, target_shape)
+        #mask = self.expand_3d_array(mask, target_shape, True)
 
         img = np.expand_dims(img, axis=0)
         mask = np.expand_dims(mask, axis=0)

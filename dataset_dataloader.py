@@ -74,6 +74,10 @@ class LungsDataset(Dataset):
         #img = self.expand_3d_array(img, target_shape)
         #mask = self.expand_3d_array(mask, target_shape, True)
 
+        
+        np.clip(img, -500, 500, img)
+
+        
         img = self.pad_array(img, target_shape)
         mask = self.pad_array(mask, target_shape)
 

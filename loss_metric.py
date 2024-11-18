@@ -103,8 +103,15 @@ class DiceLoss(nn.Module):
                 logits: torch.Tensor,
                 targets: torch.Tensor) -> torch.Tensor:
         
+
+        
+
         num = targets.size(0)
         probability = torch.sigmoid(logits)
+
+        print("prob orig shape", probability.shape)
+        print("targets orig shape", targets.shape)
+
         probability = probability.view(num, -1)
         targets = targets.view(num, -1)
         assert(probability.shape == targets.shape)

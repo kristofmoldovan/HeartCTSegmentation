@@ -112,6 +112,9 @@ class DiceLoss(nn.Module):
         print("prob shape", probability.shape)
         print("prob uniq", np.unique(probability.detach().numpy()))
         print("targets uniq", np.unique(targets.detach().numpy()))
+
+        targets.cuda()
+        probability.cuda()
         
         intersection = 2.0 * (probability * targets).sum()
         union = probability.sum() + targets.sum()

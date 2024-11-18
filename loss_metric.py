@@ -23,10 +23,10 @@ def dice_coef_metric(probabilities: torch.Tensor,
 
 
     print("probabilities", probabilities.shape)
-    print("prob uniq", np.unique(probabilities))
+    print("prob uniq", np.unique(probabilities.cpu()))
 
     print("truth", truth.shape)
-    print("truth uniq", np.unique(truth))
+    print("truth uniq", np.unique(truth.cpu()))
 
     for i in range(num):
         prediction = predictions[i]
@@ -59,10 +59,10 @@ def jaccard_coef_metric(probabilities: torch.Tensor,
     assert(predictions.shape == truth.shape)
 
     print("jac probabilities", probabilities.shape)
-    print("jac prob uniq", np.unique(probabilities))
+    print("jac prob uniq", np.unique(probabilities.cpu()))
 
     print("jac truth", truth.shape)
-    print("jac truth uniq", np.unique(truth))
+    print("jac truth uniq", np.unique(truth.cpu()))
 
     for i in range(num):
         prediction = predictions[i]
@@ -121,10 +121,10 @@ class DiceLoss(nn.Module):
         assert(probability.shape == targets.shape)
 
         print("dcel probabilities", probability.shape)
-        print("dcel prob uniq", np.unique(probability))
+        print("dcel prob uniq", np.unique(probability.cpu()))
 
         print("dcel truth", targets.shape)
-        print("dcel truth uniq", np.unique(targets))
+        print("dcel truth uniq", np.unique(targets.cpu()))
         
         intersection = 2.0 * (probability * targets).sum()
         union = probability.sum() + targets.sum()

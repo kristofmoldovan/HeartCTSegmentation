@@ -84,8 +84,8 @@ class LungsDataset(Dataset):
         img = self.pad_array(img, target_shape)
         mask = self.pad_array(mask, target_shape)
 
-        img = img[:, :, 70:78]
-        mask = mask[:, :, 70:78]
+        img = img[:, :, :32] # [:, :, 70:78]
+        mask = mask[:, :, :32]
 
         img = np.expand_dims(img, axis=0)
         mask = np.expand_dims(mask, axis=0)
@@ -133,6 +133,8 @@ class LungsDataset(Dataset):
             (max((target_shape[1] - arr.shape[1]) // 2, 0),
             max((target_shape[1] - arr.shape[1] + 1) // 2, 0)),
             (0, 0)  # No padding along the third axis
+            #(max((target_shape[2] - arr.shape[2]) // 2, 0),
+            #max((target_shape[2] - arr.shape[2] + 1) // 2, 0))
         ]
 
         # Create the new array with padding

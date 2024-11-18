@@ -148,6 +148,8 @@ class BCEDiceLoss(nn.Module):
         assert(logits.shape == targets.shape)
         dice_loss = self.dice(logits, targets)
         bce_loss = self.bce(logits, targets)
+
+        print("LOSS", bce_loss + dice_loss)
         
         return bce_loss + dice_loss
 

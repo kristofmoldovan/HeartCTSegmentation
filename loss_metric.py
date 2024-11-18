@@ -109,12 +109,14 @@ class DiceLoss(nn.Module):
         targets = targets.view(num, -1)
         assert(probability.shape == targets.shape)
 
-        cpu_prob = probability.cpu()
-        cpu_target = targets.cpu()
 
-        print("prob shape", probability.shape)
-        print("prob uniq", np.unique(cpu_prob.numpy()))
-        print("targets uniq", np.unique(cpu_target.numpy()))
+        with torch.no_grad():
+            cpu_prob = probability.cpu()
+            cpu_target = targets.cpu()
+
+            print("prob shape", probability.shape)
+            print("prob uniq", np.unique(cpu_prob.numpy()))
+            print("targets uniq", np.unique(cpu_target.numpy()))
 
         targets.cuda()
         probability.cuda()

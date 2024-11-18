@@ -90,6 +90,9 @@ class LungsDataset(Dataset):
         img = img.astype(np.float16)
         mask = mask.astype(np.float16)
 
+        img = img[:, :, 70:78]
+        mask = img[:, :, 70:78]
+
         #np.unique("Mask unique: ", mask)
 
         print("IMG SHAPE: ", img.shape)

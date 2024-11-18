@@ -17,7 +17,7 @@ def dice_coef_metric(probabilities: torch.Tensor,
         Returns: dice score aka f1.
     """
 
-    print("RAN WHILE TRAINING")
+    #print("RAN WHILE TRAINING")
 
     scores = []
     num = probabilities.shape[0]
@@ -109,7 +109,7 @@ class DiceLoss(nn.Module):
         targets = targets.view(num, -1)
         assert(probability.shape == targets.shape)
 
-        print("prob shape", probability.shape)
+        #print("prob shape", probability.shape)
         #print("prob uniq", np.unique(probability.cpu().numpy()))
         #print("targets uniq", np.unique)
         

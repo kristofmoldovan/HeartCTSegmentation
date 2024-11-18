@@ -169,7 +169,7 @@ class Trainer:
         ]
 
         clear_output(True)
-        with plt.style.context("seaborn-dark-palette"):
+        with plt.style.context("seaborn-v0_8-dark-palette"):
             fig, axes = plt.subplots(3, 1, figsize=(8, 10))
             for i, ax in enumerate(axes):
                 ax.plot(data[i]['val'], c=colors[0], label="val")

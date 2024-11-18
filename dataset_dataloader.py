@@ -67,7 +67,7 @@ class LungsDataset(Dataset):
         #mask[mask < 240] = 0    # remove artifacts
         #mask[mask > 0] = 1
 
-        target_shape = (512, 512, 512)
+        target_shape = (256, 256, 256)
 
         
 
@@ -84,14 +84,14 @@ class LungsDataset(Dataset):
         img = self.pad_array(img, target_shape)
         mask = self.pad_array(mask, target_shape)
 
-        img = img[0:512, 0:512, 0:32] # [:, :, 70:78]
-        mask = mask[0:512, 0:512, 0:32]
+        img = img[0:256, 0:256, 0:32] # [:, :, 70:78]
+        mask = mask[0:256, 0:256, 0:32]
 
         img = np.expand_dims(img, axis=0)
         mask = np.expand_dims(mask, axis=0)
 
-        img = img.astype(np.float16)
-        mask = mask.astype(np.float16)
+        img = img.astype(np.float32)
+        mask = mask.astype(np.float32)
 
         
 

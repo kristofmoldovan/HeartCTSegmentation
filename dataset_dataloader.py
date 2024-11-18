@@ -84,8 +84,8 @@ class LungsDataset(Dataset):
         img = self.pad_array(img, target_shape)
         mask = self.pad_array(mask, target_shape)
 
-        img = img[:, :, 0:16] # [:, :, 70:78]
-        mask = mask[:, :, 0:16]
+        img = img[0:128, 0:128, 0:128] # [:, :, 70:78]
+        mask = mask[0:128, 0:128, 0:128]
 
         img = np.expand_dims(img, axis=0)
         mask = np.expand_dims(mask, axis=0)
@@ -109,7 +109,6 @@ class LungsDataset(Dataset):
             img = augmented['image']
             mask = augmented['mask'].permute(2, 0, 1)
 
-        torch.cuda.empty_cache()
 
         return img, mask#, img_name
 

@@ -67,7 +67,7 @@ class LungsDataset(Dataset):
         #mask[mask < 240] = 0    # remove artifacts
         #mask[mask > 0] = 1
 
-        target_shape = (192, 192, 192)
+        target_shape = (512, 512, 512)
 
         
 
@@ -117,17 +117,26 @@ class LungsDataset(Dataset):
         padding_value = 0
 
         # Compute padding for each dimension
-        pad_width = [(0, 0)] * arr.ndim
+        """pad_width = [(0, 0)] * arr.ndim
         for i, (original_dim, desired_dim) in enumerate(zip(arr.shape, target_shape)):
             total_pad = max(desired_dim - original_dim, 0)
             pad_before = total_pad // 2
             pad_after = total_pad - pad_before
-            pad_width[i] = (pad_before, pad_after)
+            pad_width[i] = (pad_before, pad_after)"""
+
+
+        pad_width = [
+            (max((desired_shape[0] - original_array.shape[0]) // 2, 0),
+            max((desired_shape[0] - original_array.shape[0] + 1) // 2, 0)),
+            (max((desired_shape[1] - original_array.shape[1]) // 2, 0),
+            max((desired_shape[1] - original_array.shape[1] + 1) // 2, 0)),
+            (0, 0)  # No padding along the third axis
+        ]
 
         # Create the new array with padding
         new_array = np.pad(arr, pad_width, constant_values=padding_value)
 
-        assert(new_array.shape == target_shape )
+        assert(new_array.shape[0] == target_shape[0] and new_array.shape[1] == target_shape[1])
 
         return new_array 
 

@@ -16,6 +16,9 @@ def dice_coef_metric(probabilities: torch.Tensor,
         eps: additive to refine the estimate.
         Returns: dice score aka f1.
     """
+
+    print("RAN WHILE TRAINING")
+
     scores = []
     num = probabilities.shape[0]
     predictions = (probabilities >= treshold).float()
@@ -105,6 +108,10 @@ class DiceLoss(nn.Module):
         probability = probability.view(num, -1)
         targets = targets.view(num, -1)
         assert(probability.shape == targets.shape)
+
+        print("prob shape", probability.shape)
+        print("prob uniq", np.unique(probability.cpu().numpy()))
+        print("targets uniq", np.unique)
         
         intersection = 2.0 * (probability * targets).sum()
         union = probability.sum() + targets.sum()

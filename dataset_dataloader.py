@@ -128,10 +128,10 @@ class LungsDataset(Dataset):
 
 
         pad_width = [
-            (max((target_shape[0] - original_array.shape[0]) // 2, 0),
-            max((target_shape[0] - original_array.shape[0] + 1) // 2, 0)),
-            (max((target_shape[1] - original_array.shape[1]) // 2, 0),
-            max((target_shape[1] - original_array.shape[1] + 1) // 2, 0)),
+            (max((target_shape[0] - arr.shape[0]) // 2, 0),
+            max((target_shape[0] - arr.shape[0] + 1) // 2, 0)),
+            (max((target_shape[1] - arr.shape[1]) // 2, 0),
+            max((target_shape[1] - arr.shape[1] + 1) // 2, 0)),
             (0, 0)  # No padding along the third axis
         ]
 

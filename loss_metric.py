@@ -149,8 +149,10 @@ class BCEDiceLoss(nn.Module):
         dice_loss = self.dice(logits, targets)
         bce_loss = self.bce(logits, targets)
 
-        print("LOSS", bce_loss + dice_loss)
         
+        print("BCE LOSS", bce_loss)
+        print("DICE LOSS", dice_loss)
+
         return bce_loss + dice_loss
 
 

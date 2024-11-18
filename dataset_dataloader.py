@@ -84,14 +84,16 @@ class LungsDataset(Dataset):
         img = self.pad_array(img, target_shape)
         mask = self.pad_array(mask, target_shape)
 
+        img = img[:, :, 70:78]
+        mask = img[:, :, 70:78]
+
         img = np.expand_dims(img, axis=0)
         mask = np.expand_dims(mask, axis=0)
 
         img = img.astype(np.float16)
         mask = mask.astype(np.float16)
 
-        img = img[:, :, 70:78]
-        mask = img[:, :, 70:78]
+        
 
         #np.unique("Mask unique: ", mask)
 
@@ -126,10 +128,10 @@ class LungsDataset(Dataset):
 
 
         pad_width = [
-            (max((desired_shape[0] - original_array.shape[0]) // 2, 0),
-            max((desired_shape[0] - original_array.shape[0] + 1) // 2, 0)),
-            (max((desired_shape[1] - original_array.shape[1]) // 2, 0),
-            max((desired_shape[1] - original_array.shape[1] + 1) // 2, 0)),
+            (max((target_shape[0] - original_array.shape[0]) // 2, 0),
+            max((target_shape[0] - original_array.shape[0] + 1) // 2, 0)),
+            (max((target_shape[1] - original_array.shape[1]) // 2, 0),
+            max((target_shape[1] - original_array.shape[1] + 1) // 2, 0)),
             (0, 0)  # No padding along the third axis
         ]
 

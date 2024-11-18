@@ -110,8 +110,8 @@ class DiceLoss(nn.Module):
         assert(probability.shape == targets.shape)
 
         print("prob shape", probability.shape)
-        print("prob uniq", np.unique(probability.cpu().numpy()))
-        print("targets uniq", np.unique(targets.cpu().numpy()))
+        print("prob uniq", np.unique(probability.detach().numpy()))
+        print("targets uniq", np.unique(targets.detach().numpy()))
         
         intersection = 2.0 * (probability * targets).sum()
         union = probability.sum() + targets.sum()

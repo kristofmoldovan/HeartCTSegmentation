@@ -25,7 +25,9 @@ def dice_coef_metric(probabilities: torch.Tensor,
     assert(predictions.shape == truth.shape)
     for i in range(num):
         prediction = predictions[i]
-        truth_ = truth[i]
+        
+        truth_ = truth[i].float() #float32
+
         intersection = 2.0 * (truth_ * prediction).sum()
         union = truth_.sum() + prediction.sum()
         if truth_.sum() == 0 and prediction.sum() == 0:
@@ -55,7 +57,9 @@ def jaccard_coef_metric(probabilities: torch.Tensor,
 
     for i in range(num):
         prediction = predictions[i]
-        truth_ = truth[i]
+
+        truth_ = truth[i].float() #float32
+
         intersection = (prediction * truth_).sum()
         union = (prediction.sum() + truth_.sum()) - intersection + eps
         if truth_.sum() == 0 and prediction.sum() == 0:
@@ -116,6 +120,9 @@ class DiceLoss(nn.Module):
         targets = targets.view(num, -1)
         assert(probability.shape == targets.shape)
 
+        #float32
+        probability = probability.float()
+        targets = targets.float()
 
         
         with torch.no_grad():

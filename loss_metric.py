@@ -125,13 +125,11 @@ class DiceLoss(nn.Module):
             print("prob uniq", np.unique(cpu_prob.numpy()))
             print("targets uniq", np.unique(cpu_target.numpy()))
 
-        targets.cuda()
-        probability.cuda()
         
         intersection = 2.0 * (probability * targets).sum()
         union = probability.sum() + targets.sum()
         dice_score = (intersection + self.eps) / union
-        #print("intersection", intersection, union, dice_score)
+        print("intersection", intersection, union, dice_score)
         return 1.0 - dice_score
         
         
@@ -150,7 +148,7 @@ class BCEDiceLoss(nn.Module):
         bce_loss = self.bce(logits, targets)
 
         
-        print("BCE LOSS", bce_loss)
+        #print("BCE LOSS", bce_loss)
         print("DICE LOSS", dice_loss)
 
         return bce_loss + dice_loss

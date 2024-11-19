@@ -124,6 +124,7 @@ class DiceLoss(nn.Module):
         probability = probability.float()
         targets = targets.float()
 
+        assert not torch.isinf(probability).any(), "Tensor contains inf values!"
         
         with torch.no_grad():
             cpu_prob = probability.cpu()
@@ -136,7 +137,14 @@ class DiceLoss(nn.Module):
         
         intersection = 2.0 * (probability * targets).sum()
         union = probability.sum() + targets.sum()
+
+        
+
         dice_score = (intersection + self.eps) / union
+
+        assert not torch.isnan(dice_score).any(), "Tensor contains NaN values!"
+        
+
         print("intersection", intersection, union, dice_score)
         return 1.0 - dice_score
         

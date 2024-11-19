@@ -82,7 +82,7 @@ class Trainer:
                 masks_dir = masks_dir,
                 path_to_csv = path_to_csv,
                 phase = phase,
-                batch_size = 8,
+                batch_size = batch_size,
                 num_workers = num_workers
             )
             for phase in self.phases

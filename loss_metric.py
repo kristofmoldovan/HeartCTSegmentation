@@ -117,13 +117,14 @@ class DiceLoss(nn.Module):
         assert(probability.shape == targets.shape)
 
 
+        """
         with torch.no_grad():
             cpu_prob = probability.cpu()
             cpu_target = targets.cpu()
 
             print("prob shape", probability.shape)
             print("prob uniq", np.unique(cpu_prob.numpy()))
-            print("targets uniq", np.unique(cpu_target.numpy()))
+            print("targets uniq", np.unique(cpu_target.numpy()))"""
 
         
         intersection = 2.0 * (probability * targets).sum()

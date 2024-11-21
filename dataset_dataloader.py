@@ -37,6 +37,7 @@ class LungsDataset(Dataset):
         self.augmentations = get_augmentations(phase)
         self.do_augmentation = False #do_augmentation
         self.slices = slices
+        self.data_type = data_type
         print("DATATYPE: ", data_type)
 
     def __len__(self):
@@ -45,9 +46,13 @@ class LungsDataset(Dataset):
     def __getitem__(self, idx):
         ct_id = self.df.loc[idx, "ID"]
         #mask_name = self.df.loc[idx, "MaskId"]
-        slice_group_index = self.df.loc[idx, "Number"]
-        img_path = os.path.join(self.root_imgs_dir, img_name)
-        mask_path = os.path.join(self.root_masks_dir, mask_name)
+
+
+        if self.data_type == "slices":
+            slice_group_index = self.df.loc[idx, "SliceIndex"]
+        else:
+            slice_group_index = self.df.loc[idx, "BlockIndex"]
+
         
         """
         if (self.slices):

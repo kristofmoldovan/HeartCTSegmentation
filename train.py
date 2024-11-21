@@ -126,6 +126,8 @@ class Trainer:
             meter.update(logits.detach().cpu(),
                          targets.detach().cpu()
                         )
+            
+            print(itr,"/",total_batches)
 
         epoch_loss = (running_loss * self.accumulation_steps) / total_batches
         epoch_dice, epoch_iou = meter.get_metrics()

@@ -109,13 +109,12 @@ class LungsDataset(Dataset):
         np.clip(img, -500, 500, img)
         np.clip(mask, -500, 500, mask)
 
+        
+
         target_xy = (256, 256)
         
         img = self.pad_XY(img, target_xy, -500)
         mask = self.pad_XY(mask, target_xy, 0)
-
-        print("IMG ORIG SHAPE: ", img.shape)
-        print("mask orig shape: ", mask.shape)
 
         assert(img.shape == mask.shape)
         
@@ -124,9 +123,7 @@ class LungsDataset(Dataset):
         else:
             assert(img.shape ==(256, 256))
 
-
-        img = self.pad_array(img, target_xy)
-        mask = self.pad_array(mask, target_xy)
+        img = (img + 500) / 1000
 
 
         img = np.expand_dims(img, axis=0)
@@ -134,16 +131,6 @@ class LungsDataset(Dataset):
 
         img = img.astype(np.float32)
         mask = mask.astype(np.float32)
-
-        
-
-        #np.unique("Mask unique: ", mask)
-
-        print("IMG SHAPE: ", img.shape)
-        print("mask shape: ", mask.shape)
-
-        print(img.shape)
-        print(mask.shape)
 
 
         #nem használok augmentation -t

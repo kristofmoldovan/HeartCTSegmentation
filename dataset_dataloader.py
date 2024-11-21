@@ -176,7 +176,7 @@ class LungsDataset(Dataset):
 
         # Apply padding
         padded_array = np.pad(
-            original_array,
+            arr,
             pad_width=paddings,  # Pad only X and Y
             mode='constant',  # Use constant padding (default value is 0)
             constant_values=value

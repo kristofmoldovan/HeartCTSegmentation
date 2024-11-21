@@ -72,11 +72,11 @@ class LungsDataset(Dataset):
         if (max(img.shape[0], img.shape[1]) > 256):
             raise Error("CT slices can't fit into 256x256!")
 
-        if data_type == "slices":
+        if self.data_type == "slices":
             img = img[:, :, slice_group_index]
             mask = mask[:, :, slice_group_index]
             #padXY
-        elif data_type == "3d_block":
+        elif self.data_type == "3d_block":
             first_slice = (slice_group_index * 32)
             end_index = min(first_slice + 32, img.shape[2])
             img = img[:, :, first_slice:end_index]
@@ -87,7 +87,7 @@ class LungsDataset(Dataset):
                 img = np.pad(img, ((0, 0), (0, 0), (0, required_padding)), mode='constant', constant_values=-500) #MIN VALUE
                 mask = np.pad(mask, ((0, 0), (0, 0), (0, required_padding)), mode='constant', constant_values=0.0) #MIN VALUE
             #pad X and Y
-        elif data_type == "3d_block_V2":
+        elif self.data_type == "3d_block_V2":
             start_index = slice_group_index - 15
             end_index = slice_group_index + 17
 
@@ -119,7 +119,7 @@ class LungsDataset(Dataset):
 
         assert(img.shape == mask.shape)
         
-        if data_type=="3d_block" or data_type=="3d_block_V2":
+        if self.data_type=="3d_block" or self.data_type=="3d_block_V2":
             assert(img.shape == (256, 256, 32))
         else:
             assert(img.shape ==(256, 256))

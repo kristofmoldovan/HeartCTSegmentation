@@ -169,6 +169,28 @@ class BCEDiceLoss(nn.Module):
 
         return bce_loss + dice_loss
 
+class BCEDiceLossMiddle(nn.Module):
+    """Compute objective loss: BCE loss + DICE loss."""
+    def __init__(self):
+        super(BCEDiceLoss, self).__init__()
+        self.bce = nn.BCEWithLogitsLoss()
+        self.dice = DiceLoss()
+        
+    def forward(self, 
+                logits: torch.Tensor,
+                targets: torch.Tensor) -> torch.Tensor:
+        assert(logits.shape == targets.shape)
+        dice_loss = self.dice(logits, targets)
+        bce_loss = self.bce(logits, targets)
+
+        middle_dice_loss = self.dice(logits, targets)
+        middle_bce_loss = self.bce(logits, targes)
+
+        #print("BCE LOSS", bce_loss)
+        print("DICE LOSS", dice_loss)
+
+        return bce_loss + dice_loss + middle_dice_loss + middle_bce_loss
+
 
 def dice_coef_metric_per_classes(probabilities: np.ndarray,
                                     truth: np.ndarray,

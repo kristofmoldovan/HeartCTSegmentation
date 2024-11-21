@@ -299,10 +299,10 @@ def get_dataloader(
 
 
     if phase == "train":
-        df = pd.read_csv(train_csv)
+        df = pd.read_csv(train_csv, sep=";")
         df.reset_index(drop=True)
     else:
-        df = pd.read_csv(val_csv)
+        df = pd.read_csv(val_csv, sep=";")
         df.reset_index(drop=True)
 
     # df = train_df if phase == "train" else val_df

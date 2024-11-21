@@ -17,8 +17,6 @@ def dice_coef_metric(probabilities: torch.Tensor,
         Returns: dice score aka f1.
     """
 
-    print("RAN WHILE TRAINING")
-
     scores = []
     num = probabilities.shape[0]
     predictions = (probabilities >= treshold).float()

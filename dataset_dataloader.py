@@ -125,8 +125,8 @@ class LungsDataset(Dataset):
             assert(img.shape ==(256, 256))
 
 
-        img = self.pad_array(img, target_shape)
-        mask = self.pad_array(mask, target_shape)
+        img = self.pad_array(img, target_xy)
+        mask = self.pad_array(mask, target_xy)
 
 
         img = np.expand_dims(img, axis=0)

@@ -57,7 +57,9 @@ class Trainer:
                  num_epochs: int,
                  imgs_dir: str,
                  masks_dir: str,
-                 path_to_csv: str,
+                 path_to_train: str,
+                 path_to_val: str,
+                 data_type: str = "slices", # slices / 3d_block / 3d_block_V2
                  display_plot: bool = True,
                  num_workers: int = 2
                 ):
@@ -80,10 +82,12 @@ class Trainer:
             phase: get_dataloader(
                 imgs_dir = imgs_dir,
                 masks_dir = masks_dir,
-                path_to_csv = path_to_csv,
+                train_csv= path_to_train,
+                val_csv= path_to_val,
                 phase = phase,
                 batch_size = batch_size,
-                num_workers = num_workers
+                num_workers = num_workers,
+                data_type=data_type
             )
             for phase in self.phases
         }

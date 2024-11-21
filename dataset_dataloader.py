@@ -27,6 +27,7 @@ class LungsDataset(Dataset):
                  masks_dir:str,
                  df: pd.DataFrame,
                  phase: str,
+                 data_type: str, # slices / 3d_block / 3d_block_V2
                  do_augmentation: bool = False,
                  slices: bool = False):
         """Initialization."""
@@ -36,56 +37,92 @@ class LungsDataset(Dataset):
         self.augmentations = get_augmentations(phase)
         self.do_augmentation = False #do_augmentation
         self.slices = slices
+        print("DATATYPE: ", data_type)
 
     def __len__(self):
         return len(self.df)
 
     def __getitem__(self, idx):
-        img_name = self.df.loc[idx, "ImageId"]
-        mask_name = self.df.loc[idx, "MaskId"]
+        ct_id = self.df.loc[idx, "ID"]
+        #mask_name = self.df.loc[idx, "MaskId"]
+        slice_group_index = self.df.loc[idx, "Number"]
         img_path = os.path.join(self.root_imgs_dir, img_name)
         mask_path = os.path.join(self.root_masks_dir, mask_name)
         
-        
+        """
         if (self.slices):
             img = cv2.imread(img_path)
             mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
-            mask = np.expand_dims(mask, axis=2)
+            mask = np.expand_dims(mask, axis=2)"""
 
+
+
+        
+        img = nib.load(os.path.join(self.root_imgs_dir, ct_id + '.nii.gz'))
+        mask = nib.load(os.path.join(self.root_masks_dir, ct_id + '.nii.gz'))
+        img = img.get_fdata()
+        mask = mask.get_fdata()
+        assert(img.shape == mask.shape)
+
+        if (max(img.shape[0], img.shape[1]) > 256):
+            raise Error("CT slices can't fit into 256x256!")
+
+        if data_type == "slices":
+            img = img[:, :, slice_group_index]
+            mask = mask[:, :, slice_group_index]
+            #padXY
+        elif data_type == "3d_block":
+            first_slice = (slice_group_index * 32)
+            end_index = min(first_slice + 32, img.shape[2])
+            img = img[:, :, first_slice:end_index]
+            mask = mask[:, :, first_slice:end_index]
+            if (img.shape[2] < 32):
+                #padbottom
+                required_padding = 32 - img.shape[2]
+                img = np.pad(img, ((0, 0), (0, 0), (0, required_padding)), mode='constant', constant_values=-500) #MIN VALUE
+                mask = np.pad(mask, ((0, 0), (0, 0), (0, required_padding)), mode='constant', constant_values=0.0) #MIN VALUE
+            #pad X and Y
+        elif data_type == "3d_block_V2":
+            start_index = slice_group_index - 15
+            end_index = slice_group_index + 17
+
+            real_start_index = max(0, start_index)
+            real_end_index = min(img.shape[0], end_index)
+            img = img[:, :, real_start_index:real_end_index]
+            mask = mask[:, :, real_start_index:real_end_index]
+
+            pad_top = min(0, start_index) * -1
+            pad_bottom = end_index - real_end_index
+
+            img = np.pad(img, ((0, 0), (0, 0), (pad_top, pad_bottom)), mode='constant', constant_values=-500) #MIN VALUE
+            mask = np.pad(mask, ((0, 0), (0, 0), (pad_top, pad_bottom)), mode='constant', constant_values=0.0) #MIN VALUE
+
+            #padXY
         else:
-            img = nib.load(os.path.join(self.root_imgs_dir, img_name + '.nii.gz'))
-            mask = nib.load(os.path.join(self.root_masks_dir, mask_name + '.nii.gz'))
-            img = img.get_fdata()
-            mask = mask.get_fdata()
+            raise Error("Unknown dataset type")
 
-        #print(mask_path)
-        #print("mask type: ", str(type(mask)))
-
-        #with open('file.txt', 'a') as f:
-        #    f.write("PATH: " + mask_path + " TYPE " + str(type(mask)) + "\n")
-
-        #mask[mask < 240] = 0    # remove artifacts
-        #mask[mask > 0] = 1
-
-        target_shape = (256, 256, 256)
-
-        
-
-        #img = self.expand_3d_array(img, target_shape)
-        #mask = self.expand_3d_array(mask, target_shape, True)
-
-        
         np.clip(img, -500, 500, img)
+        np.clip(mask, -500, 500, mask)
+
+        target_xy = (256, 256)
+        
+        img = self.pad_XY(img, target_xy, -500)
+        mask = self.pad_XY(mask, target_xy, 0)
 
         print("IMG ORIG SHAPE: ", img.shape)
         print("mask orig shape: ", mask.shape)
+
+        assert(img.shape == mask.shape)
+        
+        if data_type=="3d_block" or data_type=="3d_block_V2":
+            assert(img.shape == (256, 256, 32))
+        else:
+            assert(img.shape ==(256, 256))
 
 
         img = self.pad_array(img, target_shape)
         mask = self.pad_array(mask, target_shape)
 
-        img = img[0:256, 0:256, 0:32] # [:, :, 70:78]
-        mask = mask[0:256, 0:256, 0:32]
 
         img = np.expand_dims(img, axis=0)
         mask = np.expand_dims(mask, axis=0)
@@ -103,15 +140,44 @@ class LungsDataset(Dataset):
         print(img.shape)
         print(mask.shape)
 
+
+        #nem használok augmentation -t
+        """
         if self.do_augmentation:
             augmented = self.augmentations(image=img,
                                         mask=mask.astype(np.float32))
             img = augmented['image']
-            mask = augmented['mask'].permute(2, 0, 1)
+            mask = augmented['mask'].permute(2, 0, 1)"""
 
 
         return img, mask#, img_name
 
+    def pad_XY(self, arr, target_xy, value):
+
+        # Original dimensions
+        x = arr.shape[0]
+        y = arr.shape[1]
+
+
+        # Calculate padding sizes
+        pad_x_before = (target_xy[0] - x) // 2
+        pad_x_after = target_xy[0] - x - pad_x_before
+
+        pad_y_before = (target_xy[1] - y) // 2
+        pad_y_after = target_xy[1] - y - pad_y_before
+
+        paddings = ((pad_x_before, pad_x_after), (pad_y_before, pad_y_after), (0, 0));
+        paddings = paddings[:arr.ndim] 
+
+        # Apply padding
+        padded_array = np.pad(
+            original_array,
+            pad_width=paddings,  # Pad only X and Y
+            mode='constant',  # Use constant padding (default value is 0)
+            constant_values=value
+        )
+
+        return padded_array
 
     def pad_array(self, arr, target_shape):
         # Padding value
@@ -207,14 +273,16 @@ def get_augmentations(phase,
 def get_dataloader(
     imgs_dir: str,
     masks_dir: str,
-    path_to_csv: str,
+    train_csv: str,
+    val_csv: str,
     phase: str,
     batch_size: int = 8,
     num_workers: int = 2,
-    test_size: float = 0.2,
+    #test_size: float = 0.2,
+    data_type: str = "slices" # # slices / 3d_block / 3d_block_V2
 ):
     '''Returns: dataloader for the model training'''
-    df = pd.read_csv(path_to_csv)
+    """df = pd.read_csv(train_csv)
 
 
    
@@ -222,14 +290,22 @@ def get_dataloader(
     train_df, val_df = train_test_split(df,
                                           test_size=test_size,
                                           random_state=69)
-    train_df, val_df = train_df.reset_index(drop=True), val_df.reset_index(drop=True)
+    train_df, val_df = train_df.reset_index(drop=True), val_df.reset_index(drop=True)"""
 
-    df = train_df if phase == "train" else val_df
+
+    if phase == "train":
+        df = pd.read_csv(train_csv)
+    else:
+        df = pd.read_csv(val_csv)
+
+    # df = train_df if phase == "train" else val_df
 
     #determinisztikusan random
     #df.to_csv("val1.csv")
 
-    image_dataset = LungsDataset(imgs_dir, masks_dir, df, phase)
+
+
+    image_dataset = LungsDataset(imgs_dir, masks_dir, df, phase, data_type)
     dataloader = DataLoader(
         image_dataset,
         batch_size=batch_size,
@@ -240,6 +316,8 @@ def get_dataloader(
 
     return dataloader
 
+
+#Nincs használva, csak debughoz kellett
 def get_dataset(
     imgs_dir: str,
     masks_dir: str,

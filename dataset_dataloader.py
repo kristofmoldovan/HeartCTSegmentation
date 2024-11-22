@@ -62,25 +62,31 @@ class LungsDataset(Dataset):
 
 
 
-        
+        """
         img = nib.load(os.path.join(self.root_imgs_dir, ct_id + '.nii.gz'))
         mask = nib.load(os.path.join(self.root_masks_dir, ct_id + '.nii.gz'))
         img = img.get_fdata()
         mask = mask.get_fdata()
+        assert(img.shape == mask.shape)"""
+
+        img = np.load(os.path.join(self.root_imgs_dir, ct_id + '_' + str(slice_group_index) + '.npy'))
+        mask = np.load(os.path.join(self.root_masks_dir, ct_id + '_' + str(slice_group_index) + '.npy' ))
         assert(img.shape == mask.shape)
 
         if (max(img.shape[0], img.shape[1]) > 256):
             raise Error("CT slices can't fit into 256x256!")
 
         if self.data_type == "slices":
-            img = img[:, :, slice_group_index]
-            mask = mask[:, :, slice_group_index]
+            pass
             #padXY
         elif self.data_type == "3d_block":
+            img = np.load(os.path.join(self.root_imgs_dir, ct_id + '_' + str(slice_group_index) + '.npy'))
+            mask = np.load(os.path.join(self.root_masks_dir, ct_id + '_' + str(slice_group_index) + '.npy' ))
+            """
             first_slice = (slice_group_index * 32)
             end_index = min(first_slice + 32, img.shape[2])
             img = img[:, :, first_slice:end_index]
-            mask = mask[:, :, first_slice:end_index]
+            mask = mask[:, :, first_slice:end_index]"""
             if (img.shape[2] < 32):
                 #padbottom
                 required_padding = 32 - img.shape[2]
@@ -109,6 +115,7 @@ class LungsDataset(Dataset):
         np.clip(img, -500, 500, img)
         np.clip(mask, -500, 500, mask)
 
+        img = (img + 500) / 1000
         
 
         target_xy = (256, 256)
@@ -123,7 +130,7 @@ class LungsDataset(Dataset):
         else:
             assert(img.shape ==(256, 256))
 
-        img = (img + 500) / 1000
+        
 
 
         img = np.expand_dims(img, axis=0)

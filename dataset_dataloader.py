@@ -113,7 +113,7 @@ class LungsDataset(Dataset):
             raise Error("Unknown dataset type")
 
         np.clip(img, -500, 500, img)
-        np.clip(mask, -500, 500, mask)
+        #np.clip(mask, -500, 500, mask)
 
         img = (img + 500) / 1000
         

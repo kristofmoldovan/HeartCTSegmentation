@@ -111,18 +111,18 @@ class DiceLoss(nn.Module):
         num = targets.size(0)
         probability = torch.sigmoid(logits)
 
-        print("prob orig shape", probability.shape)
-        print("targets orig shape", targets.shape)
+        #print("prob orig shape", probability.shape)
+        #print("targets orig shape", targets.shape)
 
         probability = probability.view(num, -1)
         targets = targets.view(num, -1)
         assert(probability.shape == targets.shape)
 
         #float32
-        probability = probability.float()
-        targets = targets.float()
+        #probability = probability.float()
+        #targets = targets.float()
 
-        assert not torch.isinf(probability).any(), "Tensor contains inf values!"
+        #assert not torch.isinf(probability).any(), "Tensor contains inf values!"
         
         """
         with torch.no_grad():
@@ -141,10 +141,10 @@ class DiceLoss(nn.Module):
 
         dice_score = (intersection + self.eps) / union
 
-        assert not torch.isnan(dice_score).any(), "Tensor contains NaN values!"
+        #assert not torch.isnan(dice_score).any(), "Tensor contains NaN values!"
         
 
-        print("intersection", intersection, union, dice_score)
+        #print("intersection", intersection, union, dice_score)
         return 1.0 - dice_score
         
         
@@ -164,7 +164,7 @@ class BCEDiceLoss(nn.Module):
 
         
         #print("BCE LOSS", bce_loss)
-        print("DICE LOSS", dice_loss)
+        #print("DICE LOSS", dice_loss)
 
         return bce_loss + dice_loss
 

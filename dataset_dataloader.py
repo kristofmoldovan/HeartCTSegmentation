@@ -80,8 +80,6 @@ class LungsDataset(Dataset):
             pass
             #padXY
         elif self.data_type == "3d_block":
-            img = np.load(os.path.join(self.root_imgs_dir, ct_id + '_' + str(slice_group_index) + '.npy'))
-            mask = np.load(os.path.join(self.root_masks_dir, ct_id + '_' + str(slice_group_index) + '.npy' ))
             """
             first_slice = (slice_group_index * 32)
             end_index = min(first_slice + 32, img.shape[2])
@@ -115,12 +113,14 @@ class LungsDataset(Dataset):
         np.clip(img, -500, 500, img)
         #np.clip(mask, -500, 500, mask)
 
+
+        #0-1
         img = (img + 500) / 1000
         
 
         target_xy = (256, 256)
         
-        img = self.pad_XY(img, target_xy, -500)
+        img = self.pad_XY(img, target_xy, 0)
         mask = self.pad_XY(mask, target_xy, 0)
 
         assert(img.shape == mask.shape)

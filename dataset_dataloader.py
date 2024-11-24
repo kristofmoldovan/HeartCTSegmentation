@@ -48,7 +48,7 @@ class LungsDataset(Dataset):
         #mask_name = self.df.loc[idx, "MaskId"]
 
 
-        if self.data_type == "slices":
+        if self.data_type == "slices" or self.data_type == "3d_block_V2":
             slice_group_index = self.df.loc[idx, "SliceIndex"]
         else:
             slice_group_index = self.df.loc[idx, "BlockIndex"]

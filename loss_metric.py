@@ -171,7 +171,7 @@ class BCEDiceLoss(nn.Module):
 class BCEDiceLossMiddle(nn.Module):
     """Compute objective loss: BCE loss + DICE loss."""
     def __init__(self):
-        super(BCEDiceLoss, self).__init__()
+        super(BCEDiceLossMiddle, self).__init__()
         self.bce = nn.BCEWithLogitsLoss()
         self.dice = DiceLoss()
         

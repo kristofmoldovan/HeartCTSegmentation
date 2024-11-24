@@ -182,11 +182,16 @@ class BCEDiceLossMiddle(nn.Module):
         dice_loss = self.dice(logits, targets)
         bce_loss = self.bce(logits, targets)
 
-        middle_dice_loss = self.dice(logits, targets)
-        middle_bce_loss = self.bce(logits, targes)
+        middle_layer_logits = logits[: , :, :, :, 15:16]
+        middle_layer_targets = logits[:, :, :, :, 15:16]
+
+        middle_dice_loss = self.dice(middle_layer_logits, middle_layer_targets)
+        middle_bce_loss = self.bce(middle_layer_logits, middle_layer_targes)
+
+        print(middle_dice_loss)
 
         #print("BCE LOSS", bce_loss)
-        print("DICE LOSS", dice_loss)
+        #print("DICE LOSS", dice_loss)
 
         return bce_loss + dice_loss + middle_dice_loss + middle_bce_loss
 

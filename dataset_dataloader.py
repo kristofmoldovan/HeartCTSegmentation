@@ -69,15 +69,15 @@ class LungsDataset(Dataset):
         mask = mask.get_fdata()
         assert(img.shape == mask.shape)"""
 
-        img = np.load(os.path.join(self.root_imgs_dir, ct_id + '_' + str(slice_group_index) + '.npy'))
-        mask = np.load(os.path.join(self.root_masks_dir, ct_id + '_' + str(slice_group_index) + '.npy' ))
-        assert(img.shape == mask.shape)
+        
 
         if (max(img.shape[0], img.shape[1]) > 256):
             raise Error("CT slices can't fit into 256x256!")
 
         if self.data_type == "slices":
-            pass
+            img = np.load(os.path.join(self.root_imgs_dir, ct_id + '_' + str(slice_group_index) + '.npy'))
+            mask = np.load(os.path.join(self.root_masks_dir, ct_id + '_' + str(slice_group_index) + '.npy' ))
+            assert(img.shape == mask.shape)
             #padXY
         elif self.data_type == "3d_block":
             """
@@ -85,6 +85,9 @@ class LungsDataset(Dataset):
             end_index = min(first_slice + 32, img.shape[2])
             img = img[:, :, first_slice:end_index]
             mask = mask[:, :, first_slice:end_index]"""
+            img = np.load(os.path.join(self.root_imgs_dir, ct_id + '_' + str(slice_group_index) + '.npy'))
+            mask = np.load(os.path.join(self.root_masks_dir, ct_id + '_' + str(slice_group_index) + '.npy' ))
+            assert(img.shape == mask.shape)
             if (img.shape[2] < 32):
                 #padbottom
                 required_padding = 32 - img.shape[2]
@@ -92,11 +95,19 @@ class LungsDataset(Dataset):
                 mask = np.pad(mask, ((0, 0), (0, 0), (0, required_padding)), mode='constant', constant_values=0.0) #MIN VALUE
             #pad X and Y
         elif self.data_type == "3d_block_V2":
+            img = nib.load(os.path.join(self.root_imgs_dir, ct_id + '.nii.gz'))
+            mask = nib.load(os.path.join(self.root_masks_dir, ct_id + '.nii.gz'))
+            img = img.get_fdata()
+            mask = mask.get_fdata()
+            img = img.astype(np.float32)
+            mask = mask.astype(np.float32)
+
+
             start_index = slice_group_index - 15
             end_index = slice_group_index + 17
 
             real_start_index = max(0, start_index)
-            real_end_index = min(img.shape[0], end_index)
+            real_end_index = min(img.shape[2], end_index)
             img = img[:, :, real_start_index:real_end_index]
             mask = mask[:, :, real_start_index:real_end_index]
 

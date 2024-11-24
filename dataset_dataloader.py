@@ -71,8 +71,7 @@ class LungsDataset(Dataset):
 
         
 
-        if (max(img.shape[0], img.shape[1]) > 256):
-            raise Error("CT slices can't fit into 256x256!")
+        
 
         if self.data_type == "slices":
             img = np.load(os.path.join(self.root_imgs_dir, ct_id + '_' + str(slice_group_index) + '.npy'))
@@ -120,6 +119,10 @@ class LungsDataset(Dataset):
             #padXY
         else:
             raise Error("Unknown dataset type")
+
+
+        if (max(img.shape[0], img.shape[1]) > 256):
+            raise Error("CT slices can't fit into 256x256!")
 
         np.clip(img, -500, 500, img)
         #np.clip(mask, -500, 500, mask)

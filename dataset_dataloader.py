@@ -27,7 +27,7 @@ class LungsDataset(Dataset):
                  masks_dir:str,
                  df: pd.DataFrame,
                  phase: str,
-                 data_type: str, # slices / 3d_block / 3d_block_V2
+                 data_type: str, # slices / 3d_block / 3d_block_64 / 3d_block_128
                  do_augmentation: bool = False,
                  slices: bool = False):
         """Initialization."""
@@ -93,6 +93,25 @@ class LungsDataset(Dataset):
                 img = np.pad(img, ((0, 0), (0, 0), (0, required_padding)), mode='constant', constant_values=-500) #MIN VALUE
                 mask = np.pad(mask, ((0, 0), (0, 0), (0, required_padding)), mode='constant', constant_values=0.0) #MIN VALUE
             #pad X and Y
+        elif self.data_type == "3d_block_64":
+            img = np.load(os.path.join(self.root_imgs_dir, ct_id + '_' + str(slice_group_index) + '.npy'))
+            mask = np.load(os.path.join(self.root_masks_dir, ct_id + '_' + str(slice_group_index) + '.npy' ))
+            assert(img.shape == mask.shape)
+            if (img.shape[2] < 64):
+                #padbottom
+                required_padding = 64 - img.shape[2]
+                img = np.pad(img, ((0, 0), (0, 0), (0, required_padding)), mode='constant', constant_values=-500) #MIN VALUE
+                mask = np.pad(mask, ((0, 0), (0, 0), (0, required_padding)), mode='constant', constant_values=0.0) #MIN VALUE
+            #pad X and Y
+        elif self.data_type == "3d_block_128":
+            img = np.load(os.path.join(self.root_imgs_dir, ct_id + '_' + str(slice_group_index) + '.npy'))
+            mask = np.load(os.path.join(self.root_masks_dir, ct_id + '_' + str(slice_group_index) + '.npy' ))
+            assert(img.shape == mask.shape)
+            if (img.shape[2] < 128):
+                #padbottom
+                required_padding = 128 - img.shape[2]
+                img = np.pad(img, ((0, 0), (0, 0), (0, required_padding)), mode='constant', constant_values=-500) #MIN VALUE
+                mask = np.pad(mask, ((0, 0), (0, 0), (0, required_padding)), mode='constant', constant_values=0.0) #MIN VALUE
         elif self.data_type == "3d_block_V2":
             img = nib.load(os.path.join(self.root_imgs_dir, ct_id + '.nii.gz'))
             mask = nib.load(os.path.join(self.root_masks_dir, ct_id + '.nii.gz'))

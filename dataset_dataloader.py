@@ -158,10 +158,12 @@ class LungsDataset(Dataset):
 
         assert(img.shape == mask.shape)
         
-        if self.data_type=="3d_block" or self.data_type=="3d_block_V2":
+        if self.data_type=="3d_block":
             assert(img.shape == (256, 256, 32))
         elif self.data_type=="3d_block_64":
             assert(img.shape == (256, 256, 64))
+        elif self.data_type == "3d_block_128":
+            assert(img.shape == (256, 256, 128))
         else:
             assert(img.shape ==(256, 256))
 

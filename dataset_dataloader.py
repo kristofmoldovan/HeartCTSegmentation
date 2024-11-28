@@ -34,7 +34,7 @@ class LungsDataset(Dataset):
         self.root_imgs_dir = imgs_dir
         self.root_masks_dir = masks_dir
         self.df = df
-        self.augmentations = get_augmentations(phase)
+        self.augmentations = get_augmentations(phase) #not used
         self.do_augmentation = False #do_augmentation
         self.slices = slices
         self.data_type = data_type
@@ -314,6 +314,7 @@ def get_dataloader(
     phase: str,
     batch_size: int = 8,
     num_workers: int = 2,
+    test_csv: str = "",    
     #test_size: float = 0.2,
     data_type: str = "slices" # # slices / 3d_block / 3d_block_V2
 ):
@@ -331,6 +332,9 @@ def get_dataloader(
 
     if phase == "train":
         df = pd.read_csv(train_csv, sep=";")
+        df.reset_index(drop=True)
+    elif phase == "test":
+        df = pd.read_csv(test_csv, sep=";")
         df.reset_index(drop=True)
     else:
         df = pd.read_csv(val_csv, sep=";")
@@ -353,33 +357,3 @@ def get_dataloader(
     )
 
     return dataloader
-
-
-#Nincs használva, csak debughoz kellett
-def get_dataset(
-    imgs_dir: str,
-    masks_dir: str,
-    path_to_csv: str,
-    phase: str,
-    batch_size: int = 8,
-    num_workers: int = 2,
-    test_size: float = 0.2,
-):
-    '''Returns: dataloader for the model training'''
-    df = pd.read_csv(path_to_csv)
-
-
-   
-
-    train_df, val_df = train_test_split(df,
-                                          test_size=test_size,
-                                          random_state=69)
-    train_df, val_df = train_df.reset_index(drop=True), val_df.reset_index(drop=True)
-
-    df = train_df if phase == "train" else val_df
-
-    #determinisztikusan random
-    #df.to_csv("val1.csv")
-
-    image_dataset = LungsDataset(imgs_dir, masks_dir, df, phase)
-    return image_dataset

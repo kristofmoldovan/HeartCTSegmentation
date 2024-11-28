@@ -163,6 +163,13 @@ class BCEDiceLoss(nn.Module):
         print("BCE LOSS", bce_loss)
         print("DICE LOSS", dice_loss)
 
+        with torch.no_grad():
+            print(logits)
+            print(targets)
+
+            print(torch.unique(targets))
+            print(torch.unique())
+
         return bce_loss + dice_loss
 
 class BCEDiceLossMiddle(nn.Module):

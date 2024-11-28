@@ -116,7 +116,8 @@ class LungsDataset(Dataset):
                 mask = np.pad(mask, ((0, 0), (0, 0), (0, required_padding)), mode='constant', constant_values=0.0) #MIN VALUE
         elif self.data_type == "3d_block_128FH":
             img = np.load(os.path.join(self.root_imgs_dir, ct_id + '.npy'))
-            mask = np.load(os.path.join(self.root_imgs_dir, ct_id + '.npy'))
+            mask = np.load(os.path.join(self.root_masks_dir, ct_id + '.npy'))
+
 
         else:
             raise Error("Unknown dataset type")

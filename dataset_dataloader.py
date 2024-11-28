@@ -168,7 +168,7 @@ class LungsDataset(Dataset):
             mask = augmented['mask'].permute(2, 0, 1)"""
 
 
-        return img, mask, ct_id, slice_group_index
+        return img, mask #,ct_id, slice_group_index
 
     def pad_XY(self, arr, target_xy, value):
 

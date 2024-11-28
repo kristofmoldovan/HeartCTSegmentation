@@ -114,7 +114,7 @@ class Trainer:
         total_batches = len(dataloader)
         running_loss = 0.0
         self.optimizer.zero_grad()
-        for itr, (images, targets) in enumerate(dataloader):
+        for itr, (images, targets, *others) in enumerate(dataloader):
             loss, logits = self._compute_loss_and_outputs(images, targets)
             loss = loss / self.accumulation_steps
             if phase == "train":

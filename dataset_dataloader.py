@@ -186,7 +186,7 @@ class LungsDataset(Dataset):
             mask = augmented['mask'].permute(2, 0, 1)"""
 
 
-        return img, mask#, img_name
+        return img, mask, ct_id, slice_group_index
 
     def pad_XY(self, arr, target_xy, value):
 
@@ -316,7 +316,8 @@ def get_dataloader(
     num_workers: int = 2,
     test_csv: str = "",    
     #test_size: float = 0.2,
-    data_type: str = "slices" # # slices / 3d_block / 3d_block_V2
+    data_type: str = "slices", # # slices / 3d_block / 3d_block_V2,
+    shuffle: bool = True
 ):
     '''Returns: dataloader for the model training'''
     """df = pd.read_csv(train_csv)
@@ -353,7 +354,7 @@ def get_dataloader(
         batch_size=batch_size,
         num_workers=num_workers,
         pin_memory=True,
-        shuffle=True,
+        shuffle=shuffle,
     )
 
     return dataloader

@@ -50,6 +50,8 @@ class LungsDataset(Dataset):
 
         if self.data_type == "slices" or self.data_type == "3d_block_V2":
             slice_group_index = self.df.loc[idx, "SliceIndex"]
+        elif self.data_type == "3d_block_128FH":
+            slice_group_index = -1
         else:
             slice_group_index = self.df.loc[idx, "BlockIndex"]
 

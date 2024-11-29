@@ -141,7 +141,7 @@ class DiceLoss(nn.Module):
         #assert not torch.isnan(dice_score).any(), "Tensor contains NaN values!"
         
 
-        print("intersection", intersection, union, dice_score)
+        #print("intersection", intersection, union, dice_score)
         return 1.0 - dice_score
         
         
@@ -159,11 +159,12 @@ class BCEDiceLoss(nn.Module):
         dice_loss = self.dice(logits, targets)
         bce_loss = self.bce(logits, targets)
 
+        """
         print("logits uniq", torch.unique(logits))
         print("target uniq", torch.unique(targets))
         
         print("BCE LOSS", bce_loss)
-        print("DICE LOSS", dice_loss)
+        print("DICE LOSS", dice_loss)"""
 
         return bce_loss + dice_loss
 
